@@ -2,33 +2,35 @@ package com.example.actsofkindness
 
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
 @Composable
-fun NavigationBar(navController: NavController) {
+fun NavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     NavigationBar(
+        modifier = modifier,
         containerColor = Color.White,
         contentColor = Color.Black
     ) {
         NavigationBarItem(
-            icon = {Icon(Icons.Default.Call, contentDescription = "Camera") },
+            icon = {Icon(Icons.Default.Build, contentDescription = "Camera") },
             label = { Text("Camera")},
             selected = false,
             onClick={navController.navigate("camera")}
         )
         NavigationBarItem(
-            icon = {Icon(Icons.Default.Home, contentDescription = "Explore") },
+            icon = {Icon(Icons.Default.Search, contentDescription = "Explore") },
             label = { Text("Explore")},
             selected = false,
             onClick={navController.navigate("explore")}
         )
         NavigationBarItem(
-            icon = {Icon(Icons.Default.AccountBox, contentDescription = "Saved") },
+            icon = {Icon(Icons.Default.Favorite, contentDescription = "Saved") },
             label = { Text("Saved")},
             selected = false,
             onClick={navController.navigate("saved")}

@@ -33,7 +33,8 @@ fun SavedPage(navController: NavController) {
             title = {Text("Your Saved Photos")}
         )
 
-        GridLayout(items = listOf("Photo 1", "Photo 2", "Photo 3"),
+        GridLayout(
+            items = listOf("Photo 1", "Photo 2", "Photo 3"),
             onItemInfoClick = {info ->
                 selectedInfo = info
             },
@@ -52,5 +53,8 @@ fun SavedPage(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
         )
+    }
+    selectedInfo?.let{
+        InfoDialog(info = it, onClose = {selectedInfo = null})
     }
 }

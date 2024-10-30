@@ -50,6 +50,17 @@ android {
 }
 
 dependencies {
+    // CameraX dependencies
+    implementation(libs.androidx.camera.camera2) // Core CameraX library
+    implementation(libs.androidx.camera.lifecycle) // Lifecycle support for CameraX
+    implementation(libs.androidx.camera.view) // Camera View for UI preview
+
+    // Retrofit dependencies for making API requests to Google Cloud Vision
+    implementation(libs.retrofit) // Retrofit core library
+    implementation(libs.converter.gson) // Gson converter for JSON parsing
+
+    // Gson dependency (for handling JSON parsing manually if needed)
+    implementation(libs.gson)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)

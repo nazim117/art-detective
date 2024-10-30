@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-27T15:04:29.897249500Z">
+        <DropdownSelection timestamp="2024-10-29T10:17:56.594771Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tonin\.android\avd\Samsung_Galaxy_A32_API_35.avd" />

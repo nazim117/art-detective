@@ -41,7 +41,7 @@ fun ResultsPage(category: String, navController: NavController, viewModel: ArtVi
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             if (artObjects.isNotEmpty()) {
-                ArtGrid(artObjects = artObjects, onInfoClick = { artwork ->
+                ArtGrid(artObjects = artObjects, viewModel = viewModel, onInfoClick = { artwork ->
                     selectedArtwork = artwork
                 })
             } else {
@@ -56,7 +56,7 @@ fun ResultsPage(category: String, navController: NavController, viewModel: ArtVi
 }
 
 @Composable
-fun ArtworkCard(artwork: ArtObject, onInfoClick: (ArtObject) -> Unit) {
+fun ArtworkCard(artwork: ArtObject, viewModel: ArtViewModel?, onInfoClick: (ArtObject) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +97,7 @@ fun ArtworkCard(artwork: ArtObject, onInfoClick: (ArtObject) -> Unit) {
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { /* Save action */ }) {
+                IconButton(onClick = { viewModel?.saveArtwork(artwork) }) { // Only save if viewModel is not null
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = "Save",

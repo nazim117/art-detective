@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,31 +20,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.actsofkindness.ArtObject
+import com.example.actsofkindness.ArtViewModel
 import com.example.actsofkindness.WebImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavedPage(navController: NavController) {
-    val savedArtworks = listOf(
-        ArtObject(
-            id = "1",
-            title = "Starry Night",
-            principalOrFirstMaker = "Vincent van Gogh",
-            webImage = WebImage(url = "https://example.com/starry_night.jpg")
-        ),
-        ArtObject(
-            id = "2",
-            title = "Mona Lisa",
-            principalOrFirstMaker = "Leonardo da Vinci",
-            webImage = WebImage(url = "https://example.com/mona_lisa.jpg")
-        ),
-        ArtObject(
-            id = "3",
-            title = "The Persistence of Memory",
-            principalOrFirstMaker = "Salvador Dalí",
-            webImage = WebImage(url = "https://example.com/persistence_of_memory.jpg")
-        )
-    )
+fun SavedPage(navController: NavController, viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+    // Observe saved artworks from the ViewModel
+    val savedArtworks by viewModel.savedArtworks.collectAsState()
+
+    // Trigger fetching saved artworks when the composable is first loaded
+    LaunchedEffect(Unit) {
+        viewModel.fetchSavedArtworks()
+    }
 
     var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) } // For overlay info
 
@@ -59,12 +49,16 @@ fun SavedPage(navController: NavController) {
 
         Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
 
-        ArtGrid(
-            artObjects = savedArtworks,
-            onInfoClick = { artwork ->
-                selectedArtwork = artwork
-            }
-        )
+        if (savedArtworks.isNotEmpty()) {
+            ArtGrid(
+                artObjects = savedArtworks,
+                onInfoClick = { artwork ->
+                    selectedArtwork = artwork
+                }
+            )
+        } else {
+            Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+        }
     }
 
     // Display info dialog when an artwork is selected

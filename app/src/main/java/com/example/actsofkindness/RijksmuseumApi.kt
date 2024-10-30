@@ -17,12 +17,12 @@ data class RijksmuseumResponse(
 )
 
 data class ArtObject(
-    val id: String,
-    val title: String,
-    val principalOrFirstMaker: String,
-    val webImage: WebImage?
+    val id: String = "",
+    val title: String = "",
+    val principalOrFirstMaker: String = "",
+    val webImage: WebImage? = null
 )
 
 data class WebImage(
-    val url: String
+    val url: String = ""
 )

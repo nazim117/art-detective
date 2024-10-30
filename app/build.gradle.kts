@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -50,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation (libs.play.services.base)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1")) 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.retrofit.coroutines.adapter)
@@ -66,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.contentpager)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

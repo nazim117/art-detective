@@ -43,7 +43,6 @@ fun ExplorePage(navController: NavController, viewModel: ArtViewModel = androidx
     }
 }
 
-
 @Composable
 fun ArtistGrid(artists: List<Artist>, navController: NavController) {
     LazyRow(
@@ -79,8 +78,6 @@ fun ArtistGrid(artists: List<Artist>, navController: NavController) {
     }
 }
 
-
-
 @Composable
 fun CategoryGrid(categories: List<Category>, navController: NavController) {
     Box(
@@ -113,7 +110,11 @@ fun CategoryGrid(categories: List<Category>, navController: NavController) {
 }
 
 @Composable
-fun ArtGrid(artObjects: List<ArtObject>, onInfoClick: (ArtObject) -> Unit) {
+fun ArtGrid(
+    artObjects: List<ArtObject>,
+    viewModel: ArtViewModel? = null, // Make viewModel optional
+    onInfoClick: (ArtObject) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
@@ -122,7 +123,8 @@ fun ArtGrid(artObjects: List<ArtObject>, onInfoClick: (ArtObject) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(artObjects) { artwork ->
-            ArtworkCard(artwork = artwork, onInfoClick = onInfoClick)
+            ArtworkCard(artwork = artwork, viewModel = viewModel, onInfoClick = onInfoClick)
         }
     }
 }
+

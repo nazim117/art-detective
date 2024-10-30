@@ -2,6 +2,7 @@
 agp = "8.5.1"
 coilCompose = "2.1.0"
 converterGson = "2.9.0"
+firebaseBom = "33.5.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -12,11 +13,13 @@ activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 navigationCompose = "2.8.3"
 contentpager = "1.0.0"
+firebaseFirestoreKtx = "25.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -32,9 +35,11 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-contentpager = { group = "androidx.contentpager", name = "contentpager", version.ref = "contentpager" }
+play-services-base = { module = "com.google.android.gms:play-services-base" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 retrofit-coroutines-adapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
 kotlinx-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

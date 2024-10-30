@@ -192,3 +192,4 @@ fun analyzeImageWithVisionApi(bitmap: Bitmap, apiKey: String, onResult: (String)
         }
     })
 }
+

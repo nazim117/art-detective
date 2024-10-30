@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375230033523",
+    "project_id": "art-detective-35a68",
+    "storage_bucket": "art-detective-35a68.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375230033523:android:07daf4f8bc5a0d77be8406",
+        "android_client_info": {
+          "package_name": "com.example.actsofkindness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkcIKTsmV2902iOCA2R_dn17PB_HGNknc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

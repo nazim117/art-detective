@@ -29,12 +29,11 @@ class ArtViewModel : ViewModel() {
 
     private val apiKey = "2zWzO88Q"
 
-    // Fetch random categories by querying popular art styles
     fun fetchRandomCategories() {
         viewModelScope.launch {
             try {
                 // Uncomment the following code to use the API once it's available
-                /*
+
                 val artStyles = listOf("Impressionism", "Renaissance", "Baroque", "Cubism", "Surrealism", "Realism")
                 val categories = mutableListOf<Category>()
 
@@ -49,17 +48,17 @@ class ArtViewModel : ViewModel() {
                     }
                 }
                 _categories.value = categories
-                */
+
 
                 // Hardcoded data for categories
-                _categories.value = listOf(
-                    Category("Impressionism", "https://example.com/impressionism.jpg"),
-                    Category("Renaissance", "https://example.com/renaissance.jpg"),
-                    Category("Baroque", "https://example.com/baroque.jpg"),
-                    Category("Cubism", "https://example.com/cubism.jpg"),
-                    Category("Surrealism", "https://example.com/surrealism.jpg"),
-                    Category("Realism", "https://example.com/realism.jpg")
-                )
+//                _categories.value = listOf(
+//                    Category("Impressionism", "https://example.com/impressionism.jpg"),
+//                    Category("Renaissance", "https://example.com/renaissance.jpg"),
+//                    Category("Baroque", "https://example.com/baroque.jpg"),
+//                    Category("Cubism", "https://example.com/cubism.jpg"),
+//                    Category("Surrealism", "https://example.com/surrealism.jpg"),
+//                    Category("Realism", "https://example.com/realism.jpg")
+//                )
 
             } catch (e: Exception) {
                 _categories.value = emptyList()
@@ -72,7 +71,7 @@ class ArtViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 // Uncomment the following code to use the API once it's available
-                /*
+
                 val famousArtists = listOf("Rembrandt", "Vermeer", "Picasso", "Monet", "Van Gogh", "Dali")
                 val artists = mutableListOf<Artist>()
 
@@ -87,17 +86,17 @@ class ArtViewModel : ViewModel() {
                     }
                 }
                 _artists.value = artists
-                */
+
 
                 // Hardcoded data for artists
-                _artists.value = listOf(
-                    Artist("Rembrandt", "https://example.com/rembrandt.jpg"),
-                    Artist("Vermeer", "https://example.com/vermeer.jpg"),
-                    Artist("Picasso", "https://example.com/picasso.jpg"),
-                    Artist("Monet", "https://example.com/monet.jpg"),
-                    Artist("Van Gogh", "https://example.com/vangogh.jpg"),
-                    Artist("Dali", "https://example.com/dali.jpg")
-                )
+//                _artists.value = listOf(
+//                    Artist("Rembrandt", "https://example.com/rembrandt.jpg"),
+//                    Artist("Vermeer", "https://example.com/vermeer.jpg"),
+//                    Artist("Picasso", "https://example.com/picasso.jpg"),
+//                    Artist("Monet", "https://example.com/monet.jpg"),
+//                    Artist("Van Gogh", "https://example.com/vangogh.jpg"),
+//                    Artist("Dali", "https://example.com/dali.jpg")
+//                )
 
             } catch (e: Exception) {
                 _artists.value = emptyList()
@@ -110,23 +109,23 @@ class ArtViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 // Uncomment the following code to use the API once it's available
-                /*
+
                 val response = RetrofitInstance.api.searchArtworks(
                     apiKey = apiKey,
                     query = query,
                     imgOnly = true
                 )
                 _artObjects.value = response.artObjects
-                */
+
 
                 // Hardcoded data for artworks
-                _artObjects.value = listOf(
-                    ArtObject("1", "Starry Night", "maker 1", WebImage("https://example.com/starrynight.jpg")),
-                    ArtObject("2", "The Persistence of Memory", "maker 2", WebImage("https://example.com/persistence.jpg")),
-                    ArtObject("3","Girl with a Pearl Earring", "maker 3", WebImage("https://example.com/girlwithpearl.jpg")),
-                    ArtObject("4","Guernica", "maker 4", WebImage("https://example.com/guernica.jpg")),
-                    ArtObject("5","The Night Watch", "maker 5", WebImage("https://example.com/nightwatch.jpg"))
-                )
+//                _artObjects.value = listOf(
+//                    ArtObject("1", "Starry Night", "maker 1", WebImage("https://example.com/starrynight.jpg")),
+//                    ArtObject("2", "The Persistence of Memory", "maker 2", WebImage("https://example.com/persistence.jpg")),
+//                    ArtObject("3","Girl with a Pearl Earring", "maker 3", WebImage("https://example.com/girlwithpearl.jpg")),
+//                    ArtObject("4","Guernica", "maker 4", WebImage("https://example.com/guernica.jpg")),
+//                    ArtObject("5","The Night Watch", "maker 5", WebImage("https://example.com/nightwatch.jpg"))
+//                )
 
             } catch (e: Exception) {
                 _artObjects.value = emptyList()

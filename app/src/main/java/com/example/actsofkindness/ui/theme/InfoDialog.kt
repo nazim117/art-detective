@@ -27,18 +27,17 @@ fun InfoDialog(artwork: ArtObject, onClose: () -> Unit) {
         title = { Text(artwork.title) },
         text = {
             Column {
-                Text("Artist: ${artwork.principalOrFirstMaker}")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Description: ${artwork.title}.")
                 artwork.webImage?.url?.let { imageUrl ->
                     Image(
                         painter = rememberAsyncImagePainter(imageUrl),
                         contentDescription = artwork.title,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .height(200.dp)
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Artist: ${artwork.principalOrFirstMaker}")
             }
         }
     )

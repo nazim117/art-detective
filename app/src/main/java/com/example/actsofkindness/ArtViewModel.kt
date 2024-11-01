@@ -3,17 +3,22 @@ package com.example.actsofkindness
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 data class Category(val name: String, val imageUrl: String?)
 data class Artist(val name: String, val imageUrl: String?)
 
-class ArtViewModel : ViewModel() {
-    private val firestore = FirebaseFirestore.getInstance()
+class ArtViewModel(
+    private val artworkRepository: ArtworkRepository = ArtworkRepository(FirebaseFirestore.getInstance())
+) : ViewModel() {
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
+
+    val _showSaveSnackbar = MutableStateFlow(false)
+    val showSaveSnackbar: StateFlow<Boolean> get() = _showSaveSnackbar
 
     private val _savedArtworks = MutableStateFlow<List<ArtObject>>(emptyList())
     val savedArtworks: StateFlow<List<ArtObject>> get() = _savedArtworks
@@ -29,11 +34,9 @@ class ArtViewModel : ViewModel() {
 
     private val apiKey = "2zWzO88Q"
 
-    // Fetch random categories by querying popular art styles
     fun fetchRandomCategories() {
         viewModelScope.launch {
             try {
-                // Uncomment the following code to use the API once it's available
                 /*
                 val artStyles = listOf("Impressionism", "Renaissance", "Baroque", "Cubism", "Surrealism", "Realism")
                 val categories = mutableListOf<Category>()
@@ -67,11 +70,9 @@ class ArtViewModel : ViewModel() {
         }
     }
 
-    // Fetch popular artists by querying for well-known artist names
     fun fetchPopularArtists() {
         viewModelScope.launch {
             try {
-                // Uncomment the following code to use the API once it's available
                 /*
                 val famousArtists = listOf("Rembrandt", "Vermeer", "Picasso", "Monet", "Van Gogh", "Dali")
                 val artists = mutableListOf<Artist>()
@@ -105,11 +106,9 @@ class ArtViewModel : ViewModel() {
         }
     }
 
-    // Fetch artworks based on a specific category or artist
     fun fetchArtworks(query: String) {
         viewModelScope.launch {
             try {
-                // Uncomment the following code to use the API once it's available
                 /*
                 val response = RetrofitInstance.api.searchArtworks(
                     apiKey = apiKey,
@@ -133,32 +132,34 @@ class ArtViewModel : ViewModel() {
             }
         }
     }
-    fun saveArtwork(artwork: ArtObject) {
-        val artworkData = hashMapOf(
-            "artist" to artwork.principalOrFirstMaker,
-            "imageUrl" to artwork.webImage?.url,
-            "title" to artwork.title
-        )
 
-        firestore.collection("saved_artworks")
-            .add(artworkData)
-            .addOnSuccessListener { documentReference ->
-                // Handle successful save, e.g., show a confirmation message
+    fun saveArtwork(artwork: ArtObject) {
+        viewModelScope.launch {
+            val success = artworkRepository.saveArtwork(artwork)
+            if (success) {
+                _showSaveSnackbar.value = true
+                fetchSavedArtworks()
             }
-            .addOnFailureListener { e ->
-                // Handle failure, e.g., show an error message
+        }
+    }
+
+    fun toggleSaveArtwork(artwork: ArtObject) {
+        viewModelScope.launch {
+            val existingArtwork = _savedArtworks.value.find { it.title == artwork.title }
+            if (existingArtwork != null) {
+                artworkRepository.removeArtwork(existingArtwork)
+                fetchSavedArtworks()
+            } else {
+                saveArtwork(artwork)
             }
+        }
     }
 
     fun fetchSavedArtworks() {
         viewModelScope.launch {
-            try {
-                val snapshot = firestore.collection("saved_artworks").get().await()
-                val artworks = snapshot.documents.mapNotNull { it.toObject<ArtObject>() }
-                _savedArtworks.value = artworks
-            } catch (e: Exception) {
-                _savedArtworks.value = emptyList() // Handle the error by showing an empty list
-            }
+            _isLoading.value = true
+            _savedArtworks.value = artworkRepository.fetchSavedArtworks()
+            _isLoading.value = false
         }
     }
 }

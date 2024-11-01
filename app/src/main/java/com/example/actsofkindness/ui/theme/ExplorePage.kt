@@ -80,29 +80,21 @@ fun ArtistGrid(artists: List<Artist>, navController: NavController) {
 
 @Composable
 fun CategoryGrid(categories: List<Category>, navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
-    ) {
-        LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-            items(categories.size) { index ->
-                val category = categories[index]
-                TextButton(onClick = {
-                    navController.navigate("results/${category.name}")
-                }) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        category.imageUrl?.let { imageUrl ->
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentDescription = category.name,
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .padding(bottom = 4.dp)
-                            )
-                        }
-                        Text(category.name, textAlign = TextAlign.Center)
+    LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(16.dp)) {
+        items(categories.size) { index ->
+            val category = categories[index]
+            TextButton(onClick = { navController.navigate("results/${category.name}") }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    category.imageUrl?.let { imageUrl ->
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = category.name,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .padding(4.dp)
+                        )
                     }
+                    Text(category.name, textAlign = TextAlign.Center)
                 }
             }
         }
@@ -112,8 +104,9 @@ fun CategoryGrid(categories: List<Category>, navController: NavController) {
 @Composable
 fun ArtGrid(
     artObjects: List<ArtObject>,
-    viewModel: ArtViewModel? = null, // Make viewModel optional
-    onInfoClick: (ArtObject) -> Unit
+    viewModel: ArtViewModel? = null,
+    onInfoClick: (ArtObject) -> Unit,
+    onSaveClick: (ArtObject) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -123,8 +116,12 @@ fun ArtGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(artObjects) { artwork ->
-            ArtworkCard(artwork = artwork, viewModel = viewModel, onInfoClick = onInfoClick)
+            ArtworkCard(
+                artwork = artwork,
+                viewModel = viewModel,
+                onInfoClick = onInfoClick,
+                onSaveClick = onSaveClick
+            )
         }
     }
 }
-

@@ -1,5 +1,6 @@
 package com.example.actsofkindness.ui.theme
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,45 +24,50 @@ import com.example.actsofkindness.ArtObject
 import com.example.actsofkindness.ArtViewModel
 import com.example.actsofkindness.WebImage
 
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavedPage(navController: NavController, viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    // Observe saved artworks from the ViewModel
+fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
     val savedArtworks by viewModel.savedArtworks.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    // Trigger fetching saved artworks when the composable is first loaded
-    LaunchedEffect(Unit) {
-        viewModel.fetchSavedArtworks()
-    }
-
-    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) } // For overlay info
+    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        TopAppBar(
-            title = { Text("Your Saved Artworks") }
-        )
-
+        TopAppBar(title = { Text("Your Saved Artwork") })
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
-
-        if (savedArtworks.isNotEmpty()) {
-            ArtGrid(
-                artObjects = savedArtworks,
-                onInfoClick = { artwork ->
-                    selectedArtwork = artwork
-                }
-            )
+        if (isLoading) {
+            // Show loading indicator while data is being fetched
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator() // Spinner or any other loading indicator
+            }
         } else {
-            Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+            Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
+
+            if (savedArtworks.isNotEmpty()) {
+                ArtGrid(
+                    artObjects = savedArtworks,
+                    viewModel = viewModel,
+                    onInfoClick = { artwork -> selectedArtwork = artwork },
+                    onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
+                )
+            } else {
+                Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+            }
         }
     }
 
-    // Display info dialog when an artwork is selected
     selectedArtwork?.let { artwork ->
         InfoDialog(artwork = artwork, onClose = { selectedArtwork = null })
     }

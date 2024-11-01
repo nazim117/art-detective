@@ -16,15 +16,25 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.actsofkindness.ArtObject
 import com.example.actsofkindness.ArtViewModel
+import kotlinx.coroutines.delay
+import androidx.compose.material.icons.filled.Favorite
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsPage(category: String, navController: NavController, viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val artObjects by viewModel.artObjects.collectAsState()
-    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) } // For overlay info
+    val showSaveSnackbar by viewModel.showSaveSnackbar.collectAsState()
+    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) }
 
     LaunchedEffect(category) {
         viewModel.fetchArtworks(category)
+    }
+
+    if (showSaveSnackbar) {
+        LaunchedEffect(showSaveSnackbar) {
+            delay(3000)
+            viewModel._showSaveSnackbar.value = false
+        }
     }
 
     Scaffold(
@@ -37,13 +47,24 @@ fun ResultsPage(category: String, navController: NavController, viewModel: ArtVi
                     }
                 }
             )
+        },
+        snackbarHost = {
+            if (showSaveSnackbar) {
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    content = { Text("Artwork saved") }
+                )
+            }
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             if (artObjects.isNotEmpty()) {
-                ArtGrid(artObjects = artObjects, viewModel = viewModel, onInfoClick = { artwork ->
-                    selectedArtwork = artwork
-                })
+                ArtGrid(
+                    artObjects = artObjects,
+                    viewModel = viewModel,
+                    onInfoClick = { artwork -> selectedArtwork = artwork },
+                    onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
+                )
             } else {
                 Text("No artworks found for $category.", modifier = Modifier.padding(16.dp))
             }
@@ -56,7 +77,15 @@ fun ResultsPage(category: String, navController: NavController, viewModel: ArtVi
 }
 
 @Composable
-fun ArtworkCard(artwork: ArtObject, viewModel: ArtViewModel?, onInfoClick: (ArtObject) -> Unit) {
+fun ArtworkCard(
+    artwork: ArtObject,
+    viewModel: ArtViewModel?,
+    onInfoClick: (ArtObject) -> Unit,
+    onSaveClick: (ArtObject) -> Unit
+) {
+    val savedArtworks by viewModel?.savedArtworks?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val isSaved = savedArtworks.any { it.title == artwork.title }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +109,6 @@ fun ArtworkCard(artwork: ArtObject, viewModel: ArtViewModel?, onInfoClick: (ArtO
             Text(
                 text = artwork.title,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -97,10 +125,10 @@ fun ArtworkCard(artwork: ArtObject, viewModel: ArtViewModel?, onInfoClick: (ArtO
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { viewModel?.saveArtwork(artwork) }) { // Only save if viewModel is not null
+                IconButton(onClick = { onSaveClick(artwork) }) {
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Save",
+                        imageVector = if (isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = if (isSaved) "Remove from saved" else "Save",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

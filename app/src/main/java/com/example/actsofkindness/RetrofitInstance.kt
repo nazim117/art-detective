@@ -12,7 +12,7 @@ object RetrofitInstance {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())  // Enable coroutine adapter
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
             .create(RijksmuseumApi::class.java)
     }

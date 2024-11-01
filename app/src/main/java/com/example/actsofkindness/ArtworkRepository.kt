@@ -3,7 +3,6 @@ package com.example.actsofkindness
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.time.withTimeout
 import kotlinx.coroutines.withTimeout
 
 class ArtworkRepository(private val firestore: FirebaseFirestore) {
@@ -24,7 +23,7 @@ class ArtworkRepository(private val firestore: FirebaseFirestore) {
 
             true
         } catch (e: Exception) {
-            false // Indicate failure
+            false
         }
     }
 

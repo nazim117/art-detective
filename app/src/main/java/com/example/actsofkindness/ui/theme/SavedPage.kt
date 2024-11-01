@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.actsofkindness.ArtObject
 import com.example.actsofkindness.ArtViewModel
-import com.example.actsofkindness.WebImage
-
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,12 +41,11 @@ fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isLoading) {
-            // Show loading indicator while data is being fetched
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                CircularProgressIndicator() // Spinner or any other loading indicator
+                CircularProgressIndicator()
             }
         } else {
             Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)

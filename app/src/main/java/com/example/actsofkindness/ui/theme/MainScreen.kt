@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,7 +25,6 @@ fun MainScreen() {
     val navController = rememberNavController()
     val viewModel: ArtViewModel = viewModel()
 
-    // Load saved artworks immediately when the app starts
     LaunchedEffect(Unit) {
         viewModel.fetchSavedArtworks()
     }

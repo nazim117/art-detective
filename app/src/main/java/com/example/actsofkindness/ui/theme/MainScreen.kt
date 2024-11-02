@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
-import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.actsofkindness.CameraPage
 
@@ -29,12 +28,12 @@ fun MainScreen() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = "explore",
+                startDestination = "camera",
                 modifier = Modifier.fillMaxSize()
             ) {
+                composable("camera") { CameraPage(navController) }
                 composable("explore") { ExplorePage(navController) }
                 composable("saved") { SavedPage(navController) }
-                composable("camera") { CameraPage(navController) }
 
                 composable(
                     route = "results/{category}",

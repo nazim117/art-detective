@@ -21,16 +21,16 @@ fun NavigationBar(navController: NavController, modifier: Modifier = Modifier) {
         contentColor = Color.Black
     ) {
         NavigationBarItem(
-            icon = {Icon(Icons.Default.Build, contentDescription = "Camera") },
-            label = { Text("Camera")},
-            selected = false,
-            onClick={navController.navigate("camera")}
-        )
-        NavigationBarItem(
             icon = {Icon(Icons.Default.Search, contentDescription = "Explore") },
             label = { Text("Explore")},
             selected = false,
             onClick={navController.navigate("explore")}
+        )
+        NavigationBarItem(
+            icon = {Icon(Icons.Default.Build, contentDescription = "Camera") },
+            label = { Text("Camera")},
+            selected = false,
+            onClick={navController.navigate("camera")}
         )
         NavigationBarItem(
             icon = {Icon(Icons.Default.Favorite, contentDescription = "Saved") },

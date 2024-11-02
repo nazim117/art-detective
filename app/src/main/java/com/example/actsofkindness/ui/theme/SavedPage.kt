@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.actsofkindness.ArtObject
 import com.example.actsofkindness.ArtViewModel
-import com.example.actsofkindness.WebImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

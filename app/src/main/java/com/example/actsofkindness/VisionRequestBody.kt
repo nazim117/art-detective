@@ -16,17 +16,17 @@ data class Image(
 )
 
 data class Feature(
-    val type: String = "WEB_DETECTION",
-    val maxResults: Int = 10
+    val type: String,
+    val maxResults: Int
 )
 
-// Response data classes
 data class VisionResponse(
     val responses: List<AnnotateImageResponse>
 )
 
 data class AnnotateImageResponse(
-    @SerializedName("webDetection") val webDetection: WebDetection?
+    @SerializedName("webDetection") val webDetection: WebDetection?,
+    @SerializedName("labelAnnotations") val labelAnnotations: List<EntityAnnotation>? // Added labelAnnotations here
 )
 
 data class WebDetection(
@@ -34,5 +34,16 @@ data class WebDetection(
     @SerializedName("bestGuessLabels") val bestGuessLabels: List<BestGuessLabel>?
 )
 
-data class WebEntity(val description: String?, val score: Float?)
-data class BestGuessLabel(val label: String?)
+data class WebEntity(
+    val description: String?,
+    val score: Float?
+)
+
+data class BestGuessLabel(
+    val label: String?
+)
+
+data class EntityAnnotation( // This class represents individual label detections
+    val description: String?,
+    val score: Float?
+)

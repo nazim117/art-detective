@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
+import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +41,7 @@ fun CameraPage(navController: NavController) {
     var analysisResult by remember { mutableStateOf<String?>(null) }
 
     // Retrieve the API key from assets or define it here directly
-    val apiKey = "API_KEY" // Replace with your actual API key
+    val apiKey = "AIzaSyBQu210Fpzv8LyE6CiNxfMZ0VvHv3fRtXU" // Replace with your actual API key
 
     LaunchedEffect(cameraProviderFuture) {
         val cameraProvider = cameraProviderFuture.get()
@@ -81,6 +82,7 @@ fun CameraPage(navController: NavController) {
                     takePhoto(context, imageCapture) { bitmap ->
                         analyzeImageWithVisionApi(bitmap, apiKey) { result ->
                             analysisResult = result
+                            saveAnalysisToFirestore(bitmap, result) // Save to Firestore
                         }
                     }
                 } else {
@@ -98,6 +100,29 @@ fun CameraPage(navController: NavController) {
     analysisResult?.let {
         ResultDialog(analysisResult = it, onDismiss = { analysisResult = null })
     }
+}
+
+// Function to save image analysis result and image data to Firestore
+fun saveAnalysisToFirestore(bitmap: Bitmap, analysisResult: String) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Convert bitmap to base64 or save it to a storage service, then get its URL
+    val base64Image = bitmapToBase64(bitmap)
+
+    val imageData = hashMapOf(
+        "description" to analysisResult,
+        "imageBase64" to base64Image,
+        "timestamp" to System.currentTimeMillis()
+    )
+
+    firestore.collection("saved_captures")
+        .add(imageData)
+        .addOnSuccessListener { documentReference ->
+            Log.d("Firestore", "DocumentSnapshot added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.e("Firestore", "Error adding document", e)
+        }
 }
 
 // Display the analysis result in a dialog

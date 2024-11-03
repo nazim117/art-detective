@@ -5,17 +5,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.actsofkindness.ArtViewModel
 import com.example.actsofkindness.CameraPage
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val viewModel: ArtViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSavedArtworks()
+    }
 
     Scaffold(
         bottomBar = { NavigationBar(navController = navController) },
@@ -33,7 +41,7 @@ fun MainScreen() {
             ) {
                 composable("camera") { CameraPage(navController) }
                 composable("explore") { ExplorePage(navController) }
-                composable("saved") { SavedPage(navController) }
+                composable("saved") { SavedPage(navController, viewModel) }
 
                 composable(
                     route = "results/{category}",

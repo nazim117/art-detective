@@ -1,40 +1,15 @@
 package com.example.actsofkindness.ui.theme
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import com.example.actsofkindness.ArtObject
 import com.example.actsofkindness.ArtViewModel
-import com.example.actsofkindness.Artist
-import com.example.actsofkindness.Category
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,100 +22,33 @@ fun ExplorePage(navController: NavController, viewModel: ArtViewModel = androidx
         viewModel.fetchPopularArtists()
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        TopAppBar(title = { Text("Explore") })
-
-        Text("Categories", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        CategoryGrid(categories = categories, navController = navController)
-
-        Text("Popular Artists", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        ArtistGrid(artists = artists, navController = navController)
-    }
-}
-
-@Composable
-fun ArtistGrid(artists: List<Artist>, navController: NavController) {
-    LazyRow(
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp)
-    ) {
-        items(artists.size) { index ->
-            val artist = artists[index]
-            TextButton(onClick = {
-                navController.navigate("results/${artist.name}")
-            }) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    artist.imageUrl?.let { imageUrl ->
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUrl),
-                            contentDescription = artist.name,
-                            modifier = Modifier
-                                .size(150.dp)
-                                .padding(bottom = 4.dp)
-                        )
-                    }
-                    Text(
-                        artist.name,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(80.dp)
-                    )
-                }
-            }
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        item{
+            TopAppBar(title = { Text("Explore") })
         }
-    }
-}
 
-@Composable
-fun CategoryGrid(categories: List<Category>, navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
-    ) {
-        LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-            items(categories.size) { index ->
-                val category = categories[index]
-                TextButton(onClick = {
-                    navController.navigate("results/${category.name}")
-                }) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        category.imageUrl?.let { imageUrl ->
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentDescription = category.name,
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .padding(bottom = 4.dp)
-                            )
-                        }
-                        Text(category.name, textAlign = TextAlign.Center)
-                    }
-                }
-            }
+        item{
+            Text("Categories", style = MaterialTheme.typography.bodyLarge)
         }
-    }
-}
+        item{
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        item{
+            CategoryGrid(categories = categories, navController = navController)
+        }
 
-@Composable
-fun ArtGrid(
-    artObjects: List<ArtObject>,
-    viewModel: ArtViewModel? = null,
-    onInfoClick: (ArtObject) -> Unit
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(artObjects) { artwork ->
-            ArtworkCard(artwork = artwork, viewModel = viewModel, onInfoClick = onInfoClick)
+        item{
+            Text("Popular Artists", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
+        }
+        item{
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        item{
+            ArtistGrid(artists = artists, navController = navController)
         }
     }
 }

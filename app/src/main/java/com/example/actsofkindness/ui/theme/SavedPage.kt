@@ -22,43 +22,69 @@ import androidx.navigation.NavController
 import com.example.actsofkindness.ArtObjectAPI
 import com.example.actsofkindness.ArtViewModel
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
     val savedArtworks by viewModel.savedArtworks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-
     var selectedArtwork by remember { mutableStateOf<ArtObjectAPI?>(null) }
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+            kotlinx.coroutines.delay(300)
+            isRefreshing = false
+        } else {
+            isRefreshing = true
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         TopAppBar(title = { Text("Your Saved Artwork") })
-        Spacer(modifier = Modifier.height(16.dp))
 
-        if (isLoading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+        Spacer(modifier = Modifier.height(24.dp))
+
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.fetchSavedArtworks() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
+                if (isLoading) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
 
-            if (savedArtworks.isNotEmpty()) {
-                ArtGrid(
-                    artObjectAPIS = savedArtworks,
-                    viewModel = viewModel,
-                    onInfoClick = { artwork -> selectedArtwork = artwork },
-                    onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
-                )
-            } else {
-                Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+                    if (savedArtworks.isNotEmpty()) {
+                        ArtGrid(
+                            artObjectAPIS = savedArtworks,
+                            viewModel = viewModel,
+                            onInfoClick = { artwork -> selectedArtwork = artwork },
+                            onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
+                        )
+                    } else {
+                        Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+                    }
+                }
             }
         }
     }

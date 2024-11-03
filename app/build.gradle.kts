@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.36.0")
     implementation (libs.play.services.base)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1")) 
     implementation(libs.retrofit)

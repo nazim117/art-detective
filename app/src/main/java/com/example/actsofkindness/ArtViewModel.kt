@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class ArtViewModel(
     private val artworkRepository: ArtworkRepository = ArtworkRepository(FirebaseFirestore.getInstance())
@@ -16,6 +17,9 @@ class ArtViewModel(
 
     val _showSaveSnackbar = MutableStateFlow(false)
     val showSaveSnackbar: StateFlow<Boolean> get() = _showSaveSnackbar
+
+    private val _savedCaptures = MutableStateFlow<List<CaptureObject>>(emptyList())
+    val savedCaptures: StateFlow<List<CaptureObject>> get() = _savedCaptures
 
     private val _savedArtworks = MutableStateFlow<List<ArtObjectAPI>>(emptyList())
     val savedArtworks: StateFlow<List<ArtObjectAPI>> get() = _savedArtworks
@@ -30,16 +34,21 @@ class ArtViewModel(
     val artObjectsAPI: StateFlow<List<ArtObjectAPI>> get() = _artObjectsAPI
 
     private val _isLoadingCategories = MutableStateFlow(false)
-
     private val _isLoadingArtists = MutableStateFlow(false)
-
     private val apiKey = "2zWzO88Q"
 
     fun fetchRandomCategories() {
         viewModelScope.launch {
             _isLoadingCategories.value = true
             try {
-                val artStyles = listOf("Impressionism", "Renaissance", "Baroque", "Cubism", "Surrealism", "Realism")
+                val artStyles = listOf(
+                    "Impressionism",
+                    "Renaissance",
+                    "Baroque",
+                    "Cubism",
+                    "Surrealism",
+                    "Realism"
+                )
                 val categories = mutableListOf<Category>()
 
                 for (style in artStyles) {
@@ -57,7 +66,6 @@ class ArtViewModel(
                 ApiCache.categories = categories
             } catch (e: Exception) {
                 println("Error fetching categories from API: ${e.message}")
-
                 ApiCache.categories?.let {
                     _categories.value = it
                 } ?: run {
@@ -73,7 +81,8 @@ class ArtViewModel(
         viewModelScope.launch {
             _isLoadingArtists.value = true
             try {
-                val famousArtists = listOf("Rembrandt", "Vermeer", "Picasso", "Monet", "Van Gogh", "Dali")
+                val famousArtists =
+                    listOf("Rembrandt", "Vermeer", "Picasso", "Monet", "Van Gogh", "Dali")
                 val artists = mutableListOf<Artist>()
 
                 for (artist in famousArtists) {
@@ -91,7 +100,6 @@ class ArtViewModel(
                 ApiCache.artists = artists
             } catch (e: Exception) {
                 println("Error fetching artists from API: ${e.message}")
-
                 ApiCache.artists?.let {
                     _artists.value = it
                 } ?: run {
@@ -175,5 +183,42 @@ class ArtViewModel(
                 e.printStackTrace()
             }
         })
+    }
+
+    fun fetchSavedCaptures() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                println("Debug: Fetching captures from Firestore...")
+
+                val snapshot =
+                    artworkRepository.firestore.collection("saved_captures").get().await()
+                val captures = snapshot.documents.mapNotNull { document ->
+                    val description = document.getString("description").orEmpty()
+                    val imageBase64 = document.getString("imageBase64").orEmpty()
+
+                    // Debug each capture's content to verify data integrity
+                    println("Debug: Fetched capture - Description: $description, ImageBase64 Length: ${imageBase64.length}")
+
+                    if (description.isNotBlank() && imageBase64.isNotBlank()) {
+                        CaptureObject(description = description, imageBase64 = imageBase64)
+                    } else {
+                        null
+                    }
+                }
+
+                _savedCaptures.value = captures
+                _isLoading.value = false
+
+                println("Debug: Fetched ${captures.size} captures from Firestore.")
+                captures.forEach { capture -> println("Capture - Description: ${capture.description}") }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _savedCaptures.value = emptyList()
+                _isLoading.value = false
+                println("Error: Failed to fetch captures - ${e.message}")
+            }
+        }
     }
 }

@@ -1,11 +1,19 @@
 package com.example.actsofkindness.ui.theme
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -13,7 +21,10 @@ import com.example.actsofkindness.ArtViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExplorePage(navController: NavController, viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ExplorePage(
+    navController: NavController,
+    viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     val categories by viewModel.categories.collectAsState()
     val artists by viewModel.artists.collectAsState()
 
@@ -26,28 +37,33 @@ fun ExplorePage(navController: NavController, viewModel: ArtViewModel = androidx
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        item{
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
             TopAppBar(title = { Text("Explore") })
         }
 
-        item{
+        item {
             Text("Categories", style = MaterialTheme.typography.bodyLarge)
         }
-        item{
+        item {
             Spacer(modifier = Modifier.height(8.dp))
         }
-        item{
+        item {
             CategoryGrid(categories = categories, navController = navController)
         }
 
-        item{
-            Text("Popular Artists", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
+        item {
+            Text(
+                "Popular Artists",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
-        item{
+        item {
             Spacer(modifier = Modifier.height(8.dp))
         }
-        item{
+        item {
             ArtistGrid(artists = artists, navController = navController)
         }
     }

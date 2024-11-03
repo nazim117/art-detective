@@ -39,7 +39,11 @@ fun ArtworkCard(
     onInfoClick: (ArtObjectAPI) -> Unit,
     onSaveClick: (ArtObjectAPI) -> Unit
 ) {
-    val savedArtworks by viewModel?.savedArtworks?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val savedArtworks by viewModel?.savedArtworks?.collectAsState() ?: remember {
+        mutableStateOf(
+            emptyList()
+        )
+    }
     val isSaved = savedArtworks.any { it.title == artwork.title }
 
     Card(

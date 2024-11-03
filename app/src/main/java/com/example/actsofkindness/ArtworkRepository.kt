@@ -2,7 +2,7 @@ package com.example.actsofkindness
 
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ArtworkRepository(private val firestore: FirebaseFirestore) {
+class ArtworkRepository(public val firestore: FirebaseFirestore) {
 
     fun saveArtwork(artwork: ArtObjectAPI, callback: ArtworkFetchCallback) {
         val artworkData = hashMapOf(

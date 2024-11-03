@@ -1,16 +1,22 @@
 package com.example.actsofkindness.ui.theme
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,10 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.actsofkindness.ArtObjectAPI
 import com.example.actsofkindness.ArtViewModel
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-
+import com.example.actsofkindness.CaptureObject
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -32,57 +35,87 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
     val savedArtworks by viewModel.savedArtworks.collectAsState()
+    val savedCaptures by viewModel.savedCaptures.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
     var selectedArtwork by remember { mutableStateOf<ArtObjectAPI?>(null) }
+    var selectedCapture by remember { mutableStateOf<CaptureObject?>(null) }
 
-    var isRefreshing by remember { mutableStateOf(false) }
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+    val isRefreshing = remember { mutableStateOf(false) }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing.value)
 
-    LaunchedEffect(isLoading) {
-        if (!isLoading) {
-            kotlinx.coroutines.delay(300)
-            isRefreshing = false
-        } else {
-            isRefreshing = true
-        }
+    LaunchedEffect(Unit) {
+        viewModel.fetchSavedArtworks()
+        viewModel.fetchSavedCaptures()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        TopAppBar(title = { Text("Your Saved Artwork") })
+    LaunchedEffect(isLoading) {
+        isRefreshing.value = isLoading
+    }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Your Saved Items") })
+        }
+    ) { paddingValues ->
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = { viewModel.fetchSavedArtworks() }
+            onRefresh = {
+                viewModel.fetchSavedArtworks()
+                viewModel.fetchSavedCaptures()
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (isLoading) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    Text("Your Saved Art", style = MaterialTheme.typography.bodyLarge)
-
+                item {
+                    Text("Your Saved Artwork", style = MaterialTheme.typography.bodyLarge)
+                }
+                item {
                     if (savedArtworks.isNotEmpty()) {
-                        ArtGrid(
-                            artObjectAPIS = savedArtworks,
-                            viewModel = viewModel,
-                            onInfoClick = { artwork -> selectedArtwork = artwork },
-                            onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 200.dp, max = 400.dp)
+                        ) {
+                            ArtGrid(
+                                artObjectAPIS = savedArtworks,
+                                viewModel = viewModel,
+                                onInfoClick = { artwork -> selectedArtwork = artwork },
+                                onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }
+                            )
+                        }
                     } else {
                         Text("No saved artworks found.", modifier = Modifier.padding(16.dp))
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Text("Your Saved Captures", style = MaterialTheme.typography.bodyLarge)
+                }
+                item {
+                    if (savedCaptures.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 200.dp, max = 400.dp)
+                        ) {
+                            CaptureGrid(
+                                captureObjects = savedCaptures,
+                                onInfoClick = { capture -> selectedCapture = capture }
+                            )
+                        }
+                    } else {
+                        Text("No saved captures found.", modifier = Modifier.padding(16.dp))
                     }
                 }
             }
@@ -91,5 +124,8 @@ fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
 
     selectedArtwork?.let { artwork ->
         InfoDialog(artwork = artwork, onClose = { selectedArtwork = null })
+    }
+    selectedCapture?.let { capture ->
+        CaptureInfoDialog(capture = capture, onClose = { selectedCapture = null })
     }
 }

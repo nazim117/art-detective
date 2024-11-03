@@ -30,12 +30,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Initialize the permission launcher before setContent
-        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (!isGranted) {
-                // Show the permission dialog if permission is denied
-                showPermissionDialog = true
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (!isGranted) {
+                    // Show the permission dialog if permission is denied
+                    showPermissionDialog = true
+                }
             }
-        }
 
         // Check camera permission on launch
         checkCameraPermission()
@@ -71,7 +72,11 @@ class MainActivity : ComponentActivity() {
 
     // Function to check camera permission
     private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             showPermissionDialog = true
         }
     }

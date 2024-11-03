@@ -40,8 +40,7 @@ fun CameraPage(navController: NavController) {
     var previewView: PreviewView? = null
     var analysisResult by remember { mutableStateOf<String?>(null) }
 
-    // Retrieve the API key from assets or define it here directly
-    val apiKey = "AIzaSyBQu210Fpzv8LyE6CiNxfMZ0VvHv3fRtXU" // Replace with your actual API key
+    val apiKey = "KEY" // Replace with your actual API key
 
     LaunchedEffect(cameraProviderFuture) {
         val cameraProvider = cameraProviderFuture.get()
@@ -79,10 +78,13 @@ fun CameraPage(navController: NavController) {
         Button(
             onClick = {
                 if (apiKey.isNotEmpty()) {
-                    takePhoto(context, imageCapture) { bitmap ->
-                        analyzeImageWithVisionApi(bitmap, apiKey) { result ->
+                    takePhoto(context, imageCapture) { colorBitmap, grayscaleBitmap ->
+                        analyzeImageWithVisionApi(grayscaleBitmap, apiKey) { result ->
                             analysisResult = result
-                            saveAnalysisToFirestore(bitmap, result) // Save to Firestore
+                            saveAnalysisToFirestore(
+                                colorBitmap,
+                                result
+                            ) // Save color image to Firestore
                         }
                     }
                 } else {
@@ -102,17 +104,13 @@ fun CameraPage(navController: NavController) {
     }
 }
 
-// Function to save image analysis result and image data to Firestore
-fun saveAnalysisToFirestore(bitmap: Bitmap, analysisResult: String) {
+fun saveAnalysisToFirestore(colorBitmap: Bitmap, analysisResult: String) {
     val firestore = FirebaseFirestore.getInstance()
-
-    // Convert bitmap to base64 or save it to a storage service, then get its URL
-    val base64Image = bitmapToBase64(bitmap)
+    val base64Image = bitmapToBase64(colorBitmap)
 
     val imageData = hashMapOf(
         "description" to analysisResult,
-        "imageBase64" to base64Image,
-        "timestamp" to System.currentTimeMillis()
+        "imageBase64" to base64Image
     )
 
     firestore.collection("saved_captures")
@@ -125,7 +123,6 @@ fun saveAnalysisToFirestore(bitmap: Bitmap, analysisResult: String) {
         }
 }
 
-// Display the analysis result in a dialog
 @Composable
 fun ResultDialog(analysisResult: String, onDismiss: () -> Unit) {
     AlertDialog(
@@ -140,9 +137,8 @@ fun ResultDialog(analysisResult: String, onDismiss: () -> Unit) {
     )
 }
 
-// Function to analyze image using Vision API
-fun analyzeImageWithVisionApi(bitmap: Bitmap, apiKey: String, onResult: (String) -> Unit) {
-    val base64Image = bitmapToBase64(bitmap)
+fun analyzeImageWithVisionApi(grayscaleBitmap: Bitmap, apiKey: String, onResult: (String) -> Unit) {
+    val base64Image = bitmapToBase64(grayscaleBitmap)
 
     val requestBody = VisionRequestBody(
         requests = listOf(
@@ -156,35 +152,41 @@ fun analyzeImageWithVisionApi(bitmap: Bitmap, apiKey: String, onResult: (String)
         )
     )
 
-    RetrofitClient.instance.analyzeImage(requestBody, apiKey).enqueue(object : Callback<VisionResponse> {
-        override fun onResponse(call: Call<VisionResponse>, response: Response<VisionResponse>) {
-            if (response.isSuccessful) {
-                val bestGuess = response.body()?.responses?.firstOrNull()?.webDetection?.bestGuessLabels
-                    ?.filter { it.label != null }
-                    ?.joinToString { it.label.orEmpty() }
+    RetrofitClient.instance.analyzeImage(requestBody, apiKey)
+        .enqueue(object : Callback<VisionResponse> {
+            override fun onResponse(
+                call: Call<VisionResponse>,
+                response: Response<VisionResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val bestGuess =
+                        response.body()?.responses?.firstOrNull()?.webDetection?.bestGuessLabels
+                            ?.filter { it.label != null }
+                            ?.joinToString { it.label.orEmpty() }
 
-                val webEntities = response.body()?.responses?.firstOrNull()?.webDetection?.webEntities
-                    ?.filter { it.description != null && (it.score ?: 0f) >= 0.8 }
-                    ?.joinToString { it.description.orEmpty() }
+                    val webEntities =
+                        response.body()?.responses?.firstOrNull()?.webDetection?.webEntities
+                            ?.filter { it.description != null && (it.score ?: 0f) >= 0.8 }
+                            ?.joinToString { it.description.orEmpty() }
 
-                val labelEntities = response.body()?.responses?.firstOrNull()?.labelAnnotations
-                    ?.filter { it.description != null && (it.score ?: 0f) >= 0.8 }
-                    ?.joinToString { it.description.orEmpty() }
+                    val labelEntities = response.body()?.responses?.firstOrNull()?.labelAnnotations
+                        ?.filter { it.description != null && (it.score ?: 0f) >= 0.8 }
+                        ?.joinToString { it.description.orEmpty() }
 
-                val combinedResult = buildString {
-                    appendLine("Best Guess: $bestGuess")
-                    appendLine("Web Entities: $webEntities")
-                    appendLine("Label Entities: $labelEntities")
+                    val combinedResult = buildString {
+                        appendLine("Best Guess: $bestGuess")
+                        appendLine("Web Entities: $webEntities")
+                        appendLine("Label Entities: $labelEntities")
+                    }
+
+                    onResult(combinedResult)
+                } else {
+                    onResult("Error: ${response.errorBody()?.string()}")
                 }
-
-                onResult(combinedResult)
-            } else {
-                onResult("Error: ${response.errorBody()?.string()}")
             }
-        }
 
-        override fun onFailure(call: Call<VisionResponse>, t: Throwable) {
-            onResult("Failure: ${t.message}")
-        }
-    })
+            override fun onFailure(call: Call<VisionResponse>, t: Throwable) {
+                onResult("Failure: ${t.message}")
+            }
+        })
 }

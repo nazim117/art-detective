@@ -1,52 +1,61 @@
 package com.example.actsofkindness
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 
 class ArtworkRepository(private val firestore: FirebaseFirestore) {
 
-    suspend fun saveArtwork(artwork: ArtObject): Boolean {
-        return try {
-            val artworkData = hashMapOf(
-                "artist" to artwork.principalOrFirstMaker,
-                "imageUrl" to artwork.webImage?.url,
-                "title" to artwork.title
-            )
-            withTimeout(10000) { // Set a 5-second timeout
-                firestore
-                    .collection("saved_artworks")
-                    .add(artworkData)
-                    .await()
-            }
+    fun saveArtwork(artwork: ArtObjectAPI, callback: ArtworkFetchCallback) {
+        val artworkData = hashMapOf(
+            "principalOrFirstMaker" to artwork.principalOrFirstMaker,
+            "title" to artwork.title,
+            "webImage" to hashMapOf("url" to artwork.webImage?.url)
+        )
 
-            true
-        } catch (e: Exception) {
-            false
-        }
+        firestore.collection("saved_artworks")
+            .add(artworkData)
+            .addOnSuccessListener {
+                fetchSavedArtworks(callback)
+            }
+            .addOnFailureListener { e ->
+                callback.onFailure(e)
+            }
     }
 
-    suspend fun removeArtwork(artwork: ArtObject) {
-        try {
-            val snapshot = firestore.collection("saved_artworks")
-                .whereEqualTo("title", artwork.title)
-                .get()
-                .await()
-            for (document in snapshot.documents) {
-                document.reference.delete().await()
+    fun removeArtwork(artwork: ArtObjectAPI, callback: ArtworkFetchCallback) {
+        firestore.collection("saved_artworks")
+            .whereEqualTo("title", artwork.title)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val deleteTasks = snapshot.documents.map { document ->
+                    document.reference.delete()
+                }
+
+                callback.onSuccess(emptyList())
             }
-        } catch (e: Exception) {
-            // Handle exceptions if needed
-        }
+            .addOnFailureListener { e ->
+                callback.onFailure(e)
+            }
     }
 
-    suspend fun fetchSavedArtworks(): List<ArtObject> {
-        return try {
-            val snapshot = firestore.collection("saved_artworks").get().await()
-            snapshot.documents.mapNotNull { it.toObject<ArtObject>() }
-        } catch (e: Exception) {
-            emptyList()
-        }
+    fun fetchSavedArtworks(callback: ArtworkFetchCallback) {
+        firestore.collection("saved_artworks")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val artworkDTOs = snapshot.documents.mapNotNull { document ->
+                    document.toObject(ArtObjectAPI::class.java)
+                }
+
+                val artworks = artworkDTOs.map { dto ->
+                    ArtObjectAPI(
+                        title = dto.title,
+                        principalOrFirstMaker = dto.principalOrFirstMaker,
+                        webImage = dto.webImage?.let { WebImage(url = it.url) }
+                    )
+                }
+                callback.onSuccess(artworks)
+            }
+            .addOnFailureListener { e ->
+                callback.onFailure(e)
+            }
     }
 }

@@ -8,19 +8,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.actsofkindness.ArtObject
+import com.example.actsofkindness.ArtObjectAPI
 import com.example.actsofkindness.ArtViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsPage(category: String, navController: NavController, viewModel: ArtViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    val artObjects by viewModel.artObjects.collectAsState()
+    val artObjects by viewModel.artObjectsAPI.collectAsState()
     val showSaveSnackbar by viewModel.showSaveSnackbar.collectAsState()
-    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) }
+    var selectedArtwork by remember { mutableStateOf<ArtObjectAPI?>(null) }
 
     LaunchedEffect(category) {
         viewModel.fetchArtworks(category)
+
     }
 
     if (showSaveSnackbar) {
@@ -53,7 +54,7 @@ fun ResultsPage(category: String, navController: NavController, viewModel: ArtVi
         Box(modifier = Modifier.padding(innerPadding)) {
             if (artObjects.isNotEmpty()) {
                 ArtGrid(
-                    artObjects = artObjects,
+                    artObjectAPIS = artObjects,
                     viewModel = viewModel,
                     onInfoClick = { artwork -> selectedArtwork = artwork },
                     onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }

@@ -1,6 +1,9 @@
 package com.example.actsofkindness.ui.theme
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,15 +22,33 @@ fun ExplorePage(navController: NavController, viewModel: ArtViewModel = androidx
         viewModel.fetchPopularArtists()
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        TopAppBar(title = { Text("Explore") })
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        item{
+            TopAppBar(title = { Text("Explore") })
+        }
 
-        Text("Categories", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        CategoryGrid(categories = categories, navController = navController)
+        item{
+            Text("Categories", style = MaterialTheme.typography.bodyLarge)
+        }
+        item{
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        item{
+            CategoryGrid(categories = categories, navController = navController)
+        }
 
-        Text("Popular Artists", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        ArtistGrid(artists = artists, navController = navController)
+        item{
+            Text("Popular Artists", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
+        }
+        item{
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        item{
+            ArtistGrid(artists = artists, navController = navController)
+        }
     }
 }

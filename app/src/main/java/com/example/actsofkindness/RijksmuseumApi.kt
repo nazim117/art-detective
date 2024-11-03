@@ -11,18 +11,3 @@ interface RijksmuseumApi {
         @Query("imgonly") imgOnly: Boolean = true
     ): RijksmuseumResponse
 }
-
-data class RijksmuseumResponse(
-    val artObjects: List<ArtObject>
-)
-
-data class ArtObject(
-    val id: String = "",
-    val title: String = "",
-    val principalOrFirstMaker: String = "",
-    val webImage: WebImage? = null
-)
-
-data class WebImage(
-    val url: String = ""
-)

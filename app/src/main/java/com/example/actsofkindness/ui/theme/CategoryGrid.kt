@@ -3,6 +3,9 @@ package com.example.actsofkindness.ui.theme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,7 +23,13 @@ import com.example.actsofkindness.Category
 
 @Composable
 fun CategoryGrid(categories: List<Category>, navController: NavController) {
-    LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(16.dp)) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = 360.dp)
+    ) {
         items(categories.size) { index ->
             val category = categories[index]
             TextButton(onClick = { navController.navigate("results/${category.name}") }) {

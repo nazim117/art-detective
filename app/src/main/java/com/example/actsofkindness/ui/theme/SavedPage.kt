@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.actsofkindness.ArtObject
+import com.example.actsofkindness.ArtObjectAPI
 import com.example.actsofkindness.ArtViewModel
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
@@ -30,7 +30,7 @@ fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
     val savedArtworks by viewModel.savedArtworks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    var selectedArtwork by remember { mutableStateOf<ArtObject?>(null) }
+    var selectedArtwork by remember { mutableStateOf<ArtObjectAPI?>(null) }
 
     Column(
         modifier = Modifier
@@ -52,7 +52,7 @@ fun SavedPage(navController: NavController, viewModel: ArtViewModel) {
 
             if (savedArtworks.isNotEmpty()) {
                 ArtGrid(
-                    artObjects = savedArtworks,
+                    artObjectAPIS = savedArtworks,
                     viewModel = viewModel,
                     onInfoClick = { artwork -> selectedArtwork = artwork },
                     onSaveClick = { artwork -> viewModel.toggleSaveArtwork(artwork) }

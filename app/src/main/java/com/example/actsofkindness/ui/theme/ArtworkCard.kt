@@ -29,15 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.actsofkindness.ArtObject
+import com.example.actsofkindness.ArtObjectAPI
 import com.example.actsofkindness.ArtViewModel
 
 @Composable
 fun ArtworkCard(
-    artwork: ArtObject,
+    artwork: ArtObjectAPI,
     viewModel: ArtViewModel?,
-    onInfoClick: (ArtObject) -> Unit,
-    onSaveClick: (ArtObject) -> Unit
+    onInfoClick: (ArtObjectAPI) -> Unit,
+    onSaveClick: (ArtObjectAPI) -> Unit
 ) {
     val savedArtworks by viewModel?.savedArtworks?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val isSaved = savedArtworks.any { it.title == artwork.title }
